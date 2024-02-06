@@ -189,7 +189,7 @@ est placé sur le plateau. Vous pourrez utiliser les étapes suivantes :
 
 * réalisez une boucle qui énumèrera les cases non aménagées du plateau ;
 * pour chacune de ces cases, aménagez y un arbre, puis retirez le ;
-* au moment où l'arbre est aménagez, cherchez une autre case non aménagée ;
+* au moment où l'arbre est aménagé, cherchez une autre case non aménagée ;
 * lancez un parcours en profondeur depuis cette autre case ;
 * vérifiez que toutes les cases ont été visitées par le parcours ;
 * si ce n'est pas le cas, ajoutez une route sur la case.
