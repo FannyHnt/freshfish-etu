@@ -221,6 +221,8 @@ Vous devriez obtenir les routes suivantes :
 
 ![test routes](assets/routes.gif)
 
+[Archive contenant les étapes](assets/test_routes.tar.gz)
+
 ### Algorithme  élaboré
 
 L'algorithme naïf nécessite de réaliser un parcours du graphe pour chaque case
