@@ -219,7 +219,7 @@ de positions suivante :
 
 Vous devriez obtenir les routes suivantes :
 
-![test routes](assets/routes.mp4)
+![test routes](assets/routes.gif)
 
 ### Algorithme  élaboré
 
