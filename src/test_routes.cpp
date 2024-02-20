@@ -8,7 +8,7 @@
 int main() {
 
   Plateau p ;
-  p.ajouter({0,0}, {10,10}) ;
+  p.ajouter({0,0}, {9,9}) ;
 
   Melangeur<Position> candidates ;
   for(auto& t : p.tuiles) {
