@@ -200,6 +200,27 @@ ce qu'il n'y ait plus de cases vides. Le test initial teste délibérément sur 
 petit plateau. Si votre implémentation fonctionne vous pourrez ensuite le faire
 grossir. Vérifiez visuellement que toutes les cases sont bien accessibles.
 
+#### Test
+
+Pour tester votre approche, vous pouvez insérer des aménagements à la séquence
+de positions suivante :
+
+```
+{1, 3}, {7, 4}, {4, 4}, {5, 1}, {2, 1}, {0, 4},
+{6, 3}, {9, 3}, {8, 5}, {3, 4}, {4, 6}, {7, 3},
+{0, 3}, {9, 4}, {4, 5}, {5, 7}, {0, 0}, {3, 1},
+{0, 5}, {3, 3}, {5, 4}, {8, 9}, {7, 2}, {4, 0},
+{0, 6}, {4, 8}, {3, 0}, {5, 0}, {6, 4}, {5, 3},
+{1, 8}, {8, 7}, {9, 5}, {8, 8}, {5, 8}, {9, 0},
+{4, 7}, {9, 9}, {1, 6}, {7, 1}, {5, 6}, {1, 7},
+{9, 2}, {7, 5}, {0, 1}, {3, 5}, {7, 8}, {2, 7},
+{7, 7}, {9, 1}, {2, 8}
+```
+
+Vous devriez obtenir les routes suivantes :
+
+![test routes](assets/routes.mp4)
+
 ### Algorithme  élaboré
 
 L'algorithme naïf nécessite de réaliser un parcours du graphe pour chaque case
