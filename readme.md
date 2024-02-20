@@ -269,7 +269,7 @@ Muni de toutes ces données, une route apparaît sur la case $u$ si :
 
 1. elle est la seule pouvant accéder à une case aménagée ;
 1. elle n'est pas la case de départ et elle est à l'origine d'un arc $u → v$ utilisé 
-  tel que $R(v) ≤ P(u)$ ;
+  tel que $R(v) ≥ P(u)$ ;
 1. elle est la case de départ et elle est à l'origine de plusieurs arcs utilisés.
 
 Notez que le premier de ces trois critère nécessite de compter pour chaque case
