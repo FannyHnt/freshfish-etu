@@ -52,11 +52,12 @@ deux types d'aménagements :
 * des arbres
 
 Le point important est qu'il faudra toujours à tout moment dans la partie que
-toutes les cases aménagées soient accessibles. Si on imagine une personne ne
-pouvant se déplacer que sur les cases vides, cette personne devra pouvoir se
-rendre à côté de tous les aménagements placés sur le plateau. Au fur et à mesure
-de la partie, il ne devient plus possible d'ajouter d'aménagements sur certaines
-cases. Ces cases deviennent des routes, en brun sur l'image ci-dessous.
+toutes les cases (aménagées ou non) soient accessibles. Si on imagine une
+personne ne pouvant se déplacer que sur les cases vides, cette personne devra
+pouvoir se rendre à côté de tous les aménagements placés sur le plateau. Au fur
+et à mesure de la partie, il ne devient plus possible d'ajouter d'aménagements
+sur certaines cases. Ces cases deviennent des routes, en brun sur l'image
+ci-dessous.
 
 <center>
     <img src="assets/plateau-en-cours.svg" width=500>
