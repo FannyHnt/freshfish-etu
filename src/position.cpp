@@ -4,10 +4,24 @@
 
 Position voisine(const Position& pos, int index) {
   Position res = pos ;
-
-  //votre code ici
-
-  return res ;
+  switch (index) {
+     case 0 :
+    res.first --;
+    break;
+     case 1 :
+    res.second ++;
+    break;
+     case 2 :
+    res.first ++;
+    break;
+     case 3 :
+    res.second --;
+    break;
+  
+  default:
+    break;
+  }
+  return res;
 }
 
 std::ostream& operator<<(std::ostream& out, const Position& pos) {
