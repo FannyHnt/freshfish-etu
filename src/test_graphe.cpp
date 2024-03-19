@@ -35,9 +35,20 @@ int main() {
 
   //placement d'une boutique
   p.amenager({8,2}, Amenagement::BOUTIQUE_ECHALOTE, 1) ;
-
   //dessin du plateau dans la console
   std::cout << p << std::endl ;
+
+  if(p.tuiles.find(voisine({1,1},0)) == p.tuiles.end()){
+    std::cout << "pas endore amménagé" << std::endl;
+  } else {
+    std::cout << p.tuiles.find(voisine({1,1},0))->first << std::endl;
+    std::cout << nom_amenagement(p.tuiles.find(voisine({1,1},0))->second.amenagement) << std::endl;
+    std::cout << p.tuiles.find(voisine({1,1},0))->second.joueur << std::endl;
+  }
+
+  std::cout<<accessible({1,1},0,p)<<std::endl;
+  std::cout<<accessible({2,1},0,p)<<std::endl;
+
 
   //dessin du plateau dans une image
   //il est également possible d'écrire un fichier png

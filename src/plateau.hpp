@@ -40,6 +40,8 @@ struct Plateau {
   std::vector<Tuile> eliminees ;
 } ;
 
+bool accessible(const Position& pos,int n,Plateau &p);
+
 //affichage du plateau en console
 std::ostream& operator<<(std::ostream& out, const Plateau& p) ;
 

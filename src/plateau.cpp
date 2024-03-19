@@ -70,6 +70,18 @@ void Plateau::amenager(const Position& pos, Amenagement amenagement, int joueur)
   placer_routes(*this) ;
 }
 
+bool accessible(const Position& pos,int n,Plateau &p){
+    bool arc=false;
+    if (p.tuiles.find(voisine(pos,n))==p.tuiles.end()){
+        std::cout << "Cette voisine n'est pas dans le plateau" << std::endl;
+    } else{
+        if (!construit(p.tuiles.find(voisine(pos,n))->second.amenagement)){
+          arc=true;
+        }
+    }
+    return arc;
+}
+
 std::ostream& operator<<(std::ostream& out, const Plateau& plateau) {
   //pas de tuile pas d'affichage
   if(plateau.tuiles.size() == 0) return out ;
