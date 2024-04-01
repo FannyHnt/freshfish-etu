@@ -69,17 +69,31 @@ void Plateau::amenager(const Position& pos, Amenagement amenagement, int joueur)
   t.amenagement = amenagement ;
   placer_routes(*this) ;
 }
-
+/*
 bool accessible(const Position& pos,int n,Plateau &p){
-    bool arc=false;
-    if (p.tuiles.find(voisine(pos,n))==p.tuiles.end()){
-        std::cout << "Cette voisine n'est pas dans le plateau" << std::endl;
-    } else{
-        if (!construit(p.tuiles.find(voisine(pos,n))->second.amenagement)){
-          arc=true;
-        }
-    }
-    return arc;
+  bool arc=false;
+  if (p.tuiles.find(voisine(pos,n))==p.tuiles.end()){
+      std::cout << "Cette voisine n'est pas dans le plateau" << std::endl;
+  } else{
+      if (!construit(p.tuiles.find(voisine(pos,n))->second.amenagement)){
+        arc=true;
+      }
+  }
+  return arc;
+}
+*/
+
+bool arc_existe(const Position& pos,int v,Plateau &p){
+  bool arc=false;
+  if (p.tuiles.find(voisine(pos,v))==p.tuiles.end()){
+      std::cout << "Cette voisine n'est pas dans le plateau" << std::endl;
+  } else{
+      // il y a un arc vers la voisine si la case est vide ou une route
+      if (!construit(p.tuiles.find(pos)->second.amenagement)){
+        arc=true;
+      }
+  }
+  return arc; 
 }
 
 std::ostream& operator<<(std::ostream& out, const Plateau& plateau) {

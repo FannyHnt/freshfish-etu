@@ -46,9 +46,13 @@ int main() {
     std::cout << p.tuiles.find(voisine({1,1},0))->second.joueur << std::endl;
   }
 
+/*
   std::cout<<accessible({1,1},0,p)<<std::endl;
   std::cout<<accessible({2,1},0,p)<<std::endl;
+*/
 
+  std::cout<<arc_existe({1,1},0,p)<<std::endl;
+  std::cout<<arc_existe({2,1},0,p)<<std::endl;
 
   //dessin du plateau dans une image
   //il est également possible d'écrire un fichier png

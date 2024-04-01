@@ -40,7 +40,19 @@ struct Plateau {
   std::vector<Tuile> eliminees ;
 } ;
 
-bool accessible(const Position& pos,int n,Plateau &p);
+/*bool accessible(const Position& pos,int n,Plateau &p);*/
+
+/**
+  * @brief Verifie si il y a un arc entre une case et sa voisine
+  * Une case vide ou une route peut accéder aux quatre cases voisines. 
+  * Une case aménagée ne peut accéder à aucune autre case.
+  * @param pos position de la case
+  * @param v voisine vers laquelle on vérifie si il y a un arc 
+  * @param p plateau
+  */
+bool arc_existe(const Position& pos,int v,Plateau &p);
+
+
 
 //affichage du plateau en console
 std::ostream& operator<<(std::ostream& out, const Plateau& p) ;
