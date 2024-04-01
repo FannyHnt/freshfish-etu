@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <utility>
 
 struct Tuile {
   Amenagement amenagement ;
@@ -40,8 +41,6 @@ struct Plateau {
   std::vector<Tuile> eliminees ;
 } ;
 
-/*bool accessible(const Position& pos,int n,Plateau &p);*/
-
 /**
   * @brief Verifie si il y a un arc entre une case et sa voisine
   * Une case vide ou une route peut accéder aux quatre cases voisines. 
@@ -50,7 +49,8 @@ struct Plateau {
   * @param v voisine vers laquelle on vérifie si il y a un arc 
   * @param p plateau
   */
-bool arc_existe(const Position& pos,int v,Plateau &p);
+bool arc_existe(const Position& pos,int v,std::map<Position,Tuile> & tuiles);
+std::pair<int, int> dimensions(Plateau& p);
 
 
 

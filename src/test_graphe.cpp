@@ -51,8 +51,8 @@ int main() {
   std::cout<<accessible({2,1},0,p)<<std::endl;
 */
 
-  std::cout<<arc_existe({1,1},0,p)<<std::endl;
-  std::cout<<arc_existe({2,1},0,p)<<std::endl;
+  std::cout<<arc_existe({1,1},0,p.tuiles)<<std::endl;
+  std::cout<<arc_existe({2,1},0,p.tuiles)<<std::endl;
 
   //dessin du plateau dans une image
   //il est également possible d'écrire un fichier png

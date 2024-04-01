@@ -6,10 +6,12 @@
 #include <sstream>
 
 #include<vector>
+#include<utility>
+
 //fonction qui effectue un aprcours en profondeur 
 
-void parcours_en_profondeur(const Position & pos,std::map<Position,Tuile> & tuiles, std::vector<std::vector<bool>>& matrice_visite ){
-  matrice_visite[pos.first][pos.second]=true ;
+void explorer(const Position & pos,std::map<Position,Tuile> & tuiles, std::vector<std::vector<bool>>& matrice_visite ){
+  //matrice_visite[pos.first][pos.second]=true ;
 
   //la liste des voisins du noeud actuel 
   std::vector<Position> voisins = {
@@ -19,24 +21,28 @@ void parcours_en_profondeur(const Position & pos,std::map<Position,Tuile> & tuil
     {voisine(pos,3)}
   };
   //  for(auto& t : plateau.tuiles) { pour iteret sur les elem du vecteur  => foreach
-  for (const auto& voisin : voisins){
-    if((tuiles.find(voisin)!=tuiles.end())&& tuiles[voisin].amenagement!=Amenagement::ROUTE && ! matrice_visite[voisin.first][voisin.second]){
-
+  for (std::size_t i = 0; i < voisins.size(); ++i){
+    if(arc_existe(pos, (int) i, tuiles) && matrice_visite[voisins[i].first][voisins[i].second]==false){
+      matrice_visite[voisins[i].first][voisins[i].second]=true;
       //si le voisin existe et n'a pas été deja visité on lance un parcours en profondeur depuis ce voisin
-      parcours_en_profondeur(voisin,tuiles,matrice_visite);
-
+      explorer(voisins[i],tuiles,matrice_visite);
     }
   }
-
-
 }
 
 //lancer le parcour a partir d'une case dans le platreau
 
-void explorer(const Position& pos, std::map<Position, Tuile>& tuiles) {
+void parcours_en_profondeur(const Position& pos, std::map<Position, Tuile>& tuiles, std::vector<std::vector<bool>>& visite) {
     // Initialiser un ensemble pour garder une trace des cases visitées
-    std::vector<std::vector<bool>> visite(tuiles.size(), std::vector<bool>(tuiles.size(), false));    // Lancer le parcours en profondeur DFS depuis la position donnée
-    parcours_en_profondeur(pos, tuiles, visite);
+    //std::vector<std::vector<bool>> visite(tuiles.size(), std::vector<bool>(tuiles.size(), false));  
+    for (std::size_t i = 0; i < visite.size(); ++i) {
+        for (std::size_t j = 0; j < visite[i].size(); ++j) {
+          visite[i][j] = false;
+        }
+    } 
+    visite[pos.first][pos.second]=true; 
+    // Lancer le parcours en profondeur DFS depuis la position donnée
+    explorer(pos, tuiles, visite);
 }
 
 //on verifie si la case est bien
@@ -55,9 +61,37 @@ bool case_accessible(Plateau& p, std::vector<std::vector<bool>>& visited) {
     return true;
 }
 
+std::pair<int, int> dimensions(Plateau& p){
+  if (p.tuiles.empty()) {
+      return {0, 0}; // Retourner les dimensions nulles si le plateau est vide
+  }
+
+  // Initialiser les dimensions avec les premières coordonnées de tuile
+  int min_x = p.tuiles.begin()->first.first;
+  int max_x = p.tuiles.begin()->first.first;
+  int min_y = p.tuiles.begin()->first.second;
+  int max_y = p.tuiles.begin()->first.second;
+
+  // Parcourir toutes les positions des tuiles pour trouver les dimensions
+  for (const auto& [pos, _] : p.tuiles) {
+      min_x = std::min(min_x, pos.first);
+      max_x = std::max(max_x, pos.first);
+      min_y = std::min(min_y, pos.second);
+      max_y = std::max(max_y, pos.second);
+  }
+
+  // Calculer la largeur et la hauteur du plateau
+  int largeur = max_x - min_x + 1;
+  int hauteur = max_y - min_y + 1;
+
+  return {largeur, hauteur};
+}
+
 
 
 static void placer_routes(Plateau& p) {
+
+  std::pair<int, int> dim = dimensions(p);
 
   //votre code ici
    for (auto& tuile : p.tuiles) {
@@ -70,26 +104,22 @@ static void placer_routes(Plateau& p) {
             bool accessible = true;
             for (auto& tuile_vide: p.tuiles) {
                 if (tuile_vide.second.amenagement == Amenagement::VIDE) {
-                    //  placer un arbre sur cette autre tuile
-                    tuile_vide.second.amenagement = Amenagement::ARBRE;
-
-                    // Lancer un parcours en profondeur depuis cette  tuile trouvée 
-                    explorer(tuile_vide.first, p.tuiles);
+                    // Lancer un parcours en profondeur depuis cette  tuile trouvée
+                    std::vector<std::vector<bool>> visite(dim.first, std::vector<bool>(dim.second, false)); 
+                    parcours_en_profondeur(tuile_vide.first, p.tuiles, visite);
 
                     // Vérifier si toutes les cases sont accessibles
-                    for (const auto& tuile3 : p.tuiles) {
-                        if (tuile3.second.amenagement != Amenagement::VIDE && tuile3.second.amenagement != Amenagement::ROUTE) {
-                            accessible = false;
-                            break;
+                    // si une case n'a pas été visité alors elle n'est pas accéssible
+                    for (const auto& ligne : visite) {
+                        for (bool valeur : ligne) {
+                            if(valeur==false){
+                              accessible=false;
+                              break;
+                            }
                         }
-                    }
+                    } 
 
-                    // Retirer l'arbre placé sur cette  tuile
-                    tuile_vide.second.amenagement = Amenagement::VIDE;
-
-                    if (!accessible) {
-                        break;
-                    }
+                    break;
                 }
             }
 
@@ -97,13 +127,14 @@ static void placer_routes(Plateau& p) {
             tuile.second.amenagement = Amenagement::VIDE;
 
             //  placer une route permanente si obligé 
-            if (accessible) {
+            if (!accessible) {
                 tuile.second.amenagement = Amenagement::ROUTE;
             }
         }
     }
-
 }
+
+
 
 void Plateau::ajouter(const Position& pos) {
   if(tuiles.find(pos) != tuiles.end()) {
@@ -163,30 +194,12 @@ void Plateau::amenager(const Position& pos, Amenagement amenagement, int joueur)
   t.amenagement = amenagement ;
   placer_routes(*this) ;
 }
-/*
-bool accessible(const Position& pos,int n,Plateau &p){
-  bool arc=false;
-  if (p.tuiles.find(voisine(pos,n))==p.tuiles.end()){
-      std::cout << "Cette voisine n'est pas dans le plateau" << std::endl;
-  } else{
-      if (!construit(p.tuiles.find(voisine(pos,n))->second.amenagement)){
-        arc=true;
-      }
-  }
-  return arc;
-}
-*/
 
-bool arc_existe(const Position& pos,int v,Plateau &p){
+bool arc_existe(const Position& pos,int v,std::map<Position,Tuile> & tuiles){
   bool arc=false;
-  if (p.tuiles.find(voisine(pos,v))==p.tuiles.end()){
-      std::cout << "Cette voisine n'est pas dans le plateau" << std::endl;
-  } else{
-      // il y a un arc vers la voisine si la case est vide ou une route
-      if (!construit(p.tuiles.find(pos)->second.amenagement)){
-        arc=true;
-      }
-  }
+  if (tuiles.find(voisine(pos,v))!=tuiles.end() && !construit(tuiles.find(pos)->second.amenagement)){
+    arc=true;
+  } 
   return arc; 
 }
 
