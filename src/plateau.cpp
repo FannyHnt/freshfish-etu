@@ -7,8 +7,11 @@
 
 #include<vector>
 #include<utility>
+#include <iomanip>
 
-//fonction qui effectue un aprcours en profondeur 
+///////_____________________ALGORITHME NAIF ______________________________________________//////////////////////////
+
+//fonction qui effectue un parcours en profondeur 
 
 void explorer(const Position & pos,std::map<Position,Tuile> & tuiles, std::vector<std::vector<bool>>& matrice_visite ){
   //matrice_visite[pos.first][pos.second]=true ;
@@ -45,7 +48,7 @@ void parcours_en_profondeur(const Position& pos, std::map<Position, Tuile>& tuil
     explorer(pos, tuiles, visite);
 }
 
-//on verifie si la case est bien
+//pour verifier si la case est bien
 bool case_accessible(Plateau& p, std::vector<std::vector<bool>>& visited) {
     for (int l = 0; static_cast<std::size_t> (l) < p.tuiles.size(); l++) {
         for (int c = 0; static_cast<std::size_t>(c) < p.tuiles.size(); c++) {
@@ -61,18 +64,19 @@ bool case_accessible(Plateau& p, std::vector<std::vector<bool>>& visited) {
     return true;
 }
 
+// fonction qui retourne les dimension d'un plateau
 std::pair<int, int> dimensions(Plateau& p){
   if (p.tuiles.empty()) {
       return {0, 0}; // Retourner les dimensions nulles si le plateau est vide
   }
 
-  // Initialiser les dimensions avec les premières coordonnées de tuile
+  // on initialise les dimensions avec les premières coordonnées de tuile
   int min_x = p.tuiles.begin()->first.first;
   int max_x = p.tuiles.begin()->first.first;
   int min_y = p.tuiles.begin()->first.second;
   int max_y = p.tuiles.begin()->first.second;
 
-  // Parcourir toutes les positions des tuiles pour trouver les dimensions
+  // on parcourt toutes les positions des tuiles pour trouver les dimensions
   for (const auto& [pos, _] : p.tuiles) {
       min_x = std::min(min_x, pos.first);
       max_x = std::max(max_x, pos.first);
@@ -80,7 +84,7 @@ std::pair<int, int> dimensions(Plateau& p){
       max_y = std::max(max_y, pos.second);
   }
 
-  // Calculer la largeur et la hauteur du plateau
+  // on calcule la largeur et la hauteur du plateau
   int largeur = max_x - min_x + 1;
   int hauteur = max_y - min_y + 1;
 
@@ -89,11 +93,10 @@ std::pair<int, int> dimensions(Plateau& p){
 
 
 
-static void placer_routes(Plateau& p) {
+static void placer_routes_naive(Plateau& p) {
 
   std::pair<int, int> dim = dimensions(p);
 
-  //votre code ici
    for (auto& tuile : p.tuiles) {
         // Si la tuile est vide
         if (tuile.second.amenagement == Amenagement::VIDE) {
@@ -134,7 +137,216 @@ static void placer_routes(Plateau& p) {
     }
 }
 
+///////_____________________ALGORITHME ELABORE ______________________________________________//////////////////////////
 
+// fonction qui calcule la remontée d'une tuile se trouvant à la position pos 
+// et modifie la case correspondante dans le tableau remontee
+void calcul_remontee(const Position & pos, std::map<Position,Tuile> & tuiles, std::vector<std::vector<int>>& profondeur, std::vector<std::vector<int>>& remontee){
+  int x=pos.first;
+  int y=pos.second;
+  remontee[x][y]=profondeur[x][y];
+
+  std::vector<Position> voisins = {
+    {voisine(pos,0)},
+    {voisine(pos,1)},
+    {voisine(pos,2)},
+    {voisine(pos,3)}
+  };
+
+  int profondeur_tuile=profondeur[x][y];
+
+    for (std::size_t i = 0; i < voisins.size(); ++i){
+      // on vérifie l'arc vers chaque voisin de la tuile et on modifie sa remontée selon le cas
+      if(arc_existe(pos,(int) i, tuiles) && !(construit(tuiles.find(voisins[i])->second.amenagement))){
+
+        if(profondeur[voisins[i].first][voisins[i].second]==profondeur_tuile+1){
+          //si l'arc est utilisé 
+          remontee[x][y]=std::min(remontee[x][y],remontee[voisins[i].first][voisins[i].second]);
+        } else {
+          //si l'arc est ignorée
+          remontee[x][y]=std::min(remontee[x][y],profondeur[voisins[i].first][voisins[i].second]);
+        }  
+
+          //si l'arc est une impasse on ne fait rien  
+      }     
+    }  
+}
+
+
+// matrice_visite pour déterminer si la case voisine a déja était visitée, l'arc est donc ignorée
+// remontee[i][j] est utilisée pour stocker la valeur de la remontée de la tuile à la position (i,j)
+// profondeur[i][j] est utilisée pour stocker la valeur de la profondeur de la tuile à la position (i,j)
+// utilisee[i][j] stocke le nombre d'arc utilisée dont l'origine est la tuile à la position (i,j)
+// compteur_amenagee compte pour chaque case aménagée le nombre de cases pouvant l'atteindre
+void explorer_elabore(const Position & pos,std::map<Position,Tuile> & tuiles, std::vector<std::vector<bool>>& matrice_visite, std::vector<std::vector<int>>& remontee, std::vector<std::vector<int>>& profondeur , std::vector<std::vector<int>>& utilisee, std::vector<std::vector<int>>& compteur_amenage ){
+  std::vector<Position> voisins = {
+    {voisine(pos,0)},
+    {voisine(pos,1)},
+    {voisine(pos,2)},
+    {voisine(pos,3)}
+  };
+  for (std::size_t i = 0; i < voisins.size(); ++i){
+
+    if(arc_existe(pos, (int) i, tuiles) && matrice_visite[voisins[i].first][voisins[i].second]==false && !(construit(tuiles.find(voisins[i])->second.amenagement))){
+
+      //l'arc est utilisée
+      matrice_visite[voisins[i].first][voisins[i].second]=true;
+      profondeur[voisins[i].first][voisins[i].second]=(profondeur[pos.first][pos.second])+1;
+      utilisee[pos.first][pos.second]++;
+      explorer_elabore(voisins[i],tuiles,matrice_visite,remontee,profondeur,utilisee,compteur_amenage);
+
+    } else if(arc_existe(pos, (int) i, tuiles) && matrice_visite[voisins[i].first][voisins[i].second]==true){
+      //l'arc est ignorée
+
+    } 
+    if(arc_existe(pos, (int) i, tuiles) && construit(tuiles.find(voisins[i])->second.amenagement)){
+      //si l'arc est une impasse
+      compteur_amenage[voisins[i].first][voisins[i].second]++;
+      matrice_visite[voisins[i].first][voisins[i].second]=true;
+    }
+  }
+
+  calcul_remontee(pos,tuiles,profondeur,remontee);
+}
+
+void parcours_en_profondeur_elabore(const Position& pos, std::map<Position, Tuile>& tuiles, std::vector<std::vector<bool>>& visite,std::vector<std::vector<int>>& remontee, std::vector<std::vector<int>>& profondeur ,std::vector<std::vector<int>>& utilisee, std::vector<std::vector<int>>& compteur_amenage) {
+  for (std::size_t j = 0; j < profondeur.size();j++){
+    for (std::size_t k = 0; k < profondeur[j].size();k++){
+      profondeur[j][k]=0;
+      remontee[j][k]=0;
+    }
+  }
+   
+    for (std::size_t i = 0; i < visite.size(); ++i) {
+        for (std::size_t j = 0; j < visite[i].size(); ++j) {
+          visite[i][j] = false;
+        }
+    } 
+    visite[pos.first][pos.second]=true; 
+
+    // Lancer le parcours en profondeur depuis la position donnée
+    explorer_elabore(pos, tuiles, visite,remontee,profondeur,utilisee,compteur_amenage);
+}
+
+//fonction d'affichage de tableau pour vérifier le calcul des remontées et des profondeurs
+void afficherTableau(const std::vector<std::vector<int>>& tableau) {
+    // on détermine la largeur maximale pour chaque colonne pour un affichage avec des colonnes alignées
+    std::vector<int> largeurs(tableau[0].size(), 0);
+    for (const auto& ligne : tableau) {
+        for (size_t i = 0; i < ligne.size(); ++i) {
+            int largeur_nombre = std::to_string(ligne[i]).size();
+            if (largeur_nombre > largeurs[i]) {
+                largeurs[i] = largeur_nombre;
+            }
+        }
+    }
+
+    // on affiche le tableau 
+    for (const auto& ligne : tableau) {
+        std::cout << "+";
+        for (size_t i = 0; i < ligne.size(); ++i) {
+            std::cout << std::string(largeurs[i] + 1, '-');
+            std::cout << "+";
+        }
+        std::cout << "\n|";
+        for (size_t i = 0; i < ligne.size(); ++i) {
+            std::cout << std::setw(largeurs[i]) << std::right << ligne[i] << " |";
+        }
+        std::cout << "\n";
+    }
+
+    // on affiche la ligne inférieure de la grille
+    std::cout << "+";
+    for (size_t i = 0; i < tableau[0].size(); ++i) {
+        std::cout << std::string(largeurs[i] + 1, '-');
+        std::cout << "+";
+    }
+    std::cout << "\n";
+}
+
+void placer_routes(Plateau  & p ){
+
+  std::pair<int, int> dim = dimensions(p);
+
+  // On initialise des matrices pour stocker les informations dont on aura besoin pour déterminer les cases devenant des routes 
+  std::vector<std::vector<bool>> visite(dim.first, std::vector<bool>(dim.second, false));
+  std::vector<std::vector<int>> profondeur(dim.first, std::vector<int>(dim.second, 0));
+  std::vector<std::vector<int>> remontee(dim.first, std::vector<int>(dim.second, 0));
+  std::vector<std::vector<int>> utilisee(dim.first, std::vector<int>(dim.second, 0));
+  std::vector<std::vector<int>> compteur_amenage(dim.first, std::vector<int>(dim.second, 0));
+
+  Position depart;
+  for (auto& tuile : p.tuiles) {
+      // Chercher une case vide pour démarrer le parcours la tuile est vide
+      if (tuile.second.amenagement == Amenagement::VIDE) {
+        depart=tuile.first;
+        break;
+      }
+  }
+
+  // on lance le parcours qui calcule en meme temps les profondeurs des cases et les remontées
+  parcours_en_profondeur_elabore(depart,p.tuiles,visite,remontee,profondeur,utilisee,compteur_amenage);
+
+
+  // on parcours les tuiles pour déterminer les cases devenant des routes
+  for (auto& tuile : p.tuiles) {
+        std::vector<Position> voisins = {
+          {voisine(tuile.first,0)},
+          {voisine(tuile.first,1)},
+          {voisine(tuile.first,2)},
+          {voisine(tuile.first,3)}
+        };
+
+      bool route=false;
+
+      if (tuile.first.first!=depart.first || tuile.first.second!=depart.second) {
+        // la case n'est pas la case de départ
+        for(std::size_t i = 0; i < voisins.size(); i++){
+
+          if(arc_existe(tuile.first,(int) i, p.tuiles) && construit(p.tuiles.find(voisins[i])->second.amenagement)){
+            // CAS 1 
+            // si la case est la seule à pouvoir accéder à une case aménagée
+            if(compteur_amenage[voisins[i].first][voisins[i].second]==1){
+              route=true;
+            }
+
+          } else if((arc_existe(tuile.first,(int) i, p.tuiles)) && profondeur[voisins[i].first][voisins[i].second]==(profondeur[tuile.first.first][tuile.first.second]+1) && remontee[voisins[i].first][voisins[i].second]>=profondeur[tuile.first.first][tuile.first.second]){
+            // CAS 2
+            // elle n'est pas la case de départ et elle est à l'origine d'un arc u -> v utilisé tel que R(v)>=P(u)
+            route=true;
+          }
+        }          
+
+      }
+
+      // CAS 3
+      // la case est la case de départ et elle est à l'origine de plusieurs arcs utilisés.
+      if ((tuile.first.first==depart.first && tuile.first.second==depart.second) && utilisee[tuile.first.first][tuile.first.second]>1) {
+        route=true;
+      }
+
+      if(route){
+        tuile.second.amenagement = Amenagement::ROUTE;
+      }
+
+  }
+
+// Pour vérifier les valeurs des remontées et des profondeurs:
+
+  /*
+    // Afficher le contenu du tableau profondeur
+    std::cout << "profondeur" << std::endl;
+    afficherTableau(profondeur);
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    // Afficher le contenu du tableau remontee
+    std::cout << "remontee" << std::endl;
+    afficherTableau(remontee);
+    std::cout << std::endl;
+    std::cout << std::endl;
+  */
+}
 
 void Plateau::ajouter(const Position& pos) {
   if(tuiles.find(pos) != tuiles.end()) {
