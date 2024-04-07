@@ -52,11 +52,12 @@ deux types d'aménagements :
 * des arbres
 
 Le point important est qu'il faudra toujours à tout moment dans la partie que
-toutes les cases aménagées soient accessibles. Si on imagine une personne ne
-pouvant se déplacer que sur les cases vides, cette personne devra pouvoir se
-rendre à côté de tous les aménagements placés sur le plateau. Au fur et à mesure
-de la partie, il ne devient plus possible d'ajouter d'aménagements sur certaines
-cases. Ces cases deviennent des routes, en brun sur l'image ci-dessous.
+toutes les cases (aménagées ou non) soient accessibles. Si on imagine une
+personne ne pouvant se déplacer que sur les cases vides, cette personne devra
+pouvoir se rendre à côté de tous les aménagements placés sur le plateau. Au fur
+et à mesure de la partie, il ne devient plus possible d'ajouter d'aménagements
+sur certaines cases. Ces cases deviennent des routes, en brun sur l'image
+ci-dessous.
 
 <center>
     <img src="assets/plateau-en-cours.svg" width=500>
@@ -189,8 +190,8 @@ est placé sur le plateau. Vous pourrez utiliser les étapes suivantes :
 
 * réalisez une boucle qui énumèrera les cases non aménagées du plateau ;
 * pour chacune de ces cases, aménagez y un arbre, puis retirez le ;
-* au moment où l'arbre est aménagez, cherchez une autre case non aménagée ;
-* lancez un parcours en largeur depuis cette autre case ;
+* au moment où l'arbre est aménagé, cherchez une autre case non aménagée ;
+* lancez un parcours en profondeur depuis cette autre case ;
 * vérifiez que toutes les cases ont été visitées par le parcours ;
 * si ce n'est pas le cas, ajoutez une route sur la case.
 
@@ -199,6 +200,29 @@ test part d'un plateau vide puis ajoute des arbres sur des cases vides jusqu'à
 ce qu'il n'y ait plus de cases vides. Le test initial teste délibérément sur un
 petit plateau. Si votre implémentation fonctionne vous pourrez ensuite le faire
 grossir. Vérifiez visuellement que toutes les cases sont bien accessibles.
+
+#### Test
+
+Pour tester votre approche, vous pouvez insérer des aménagements à la séquence
+de positions suivante :
+
+```
+{1, 3}, {7, 4}, {4, 4}, {5, 1}, {2, 1}, {0, 4},
+{6, 3}, {9, 3}, {8, 5}, {3, 4}, {4, 6}, {7, 3},
+{0, 3}, {9, 4}, {4, 5}, {5, 7}, {0, 0}, {3, 1},
+{0, 5}, {3, 3}, {5, 4}, {8, 9}, {7, 2}, {4, 0},
+{0, 6}, {4, 8}, {3, 0}, {5, 0}, {6, 4}, {5, 3},
+{1, 8}, {8, 7}, {9, 5}, {8, 8}, {5, 8}, {9, 0},
+{4, 7}, {9, 9}, {1, 6}, {7, 1}, {5, 6}, {1, 7},
+{9, 2}, {7, 5}, {0, 1}, {3, 5}, {7, 8}, {2, 7},
+{7, 7}, {9, 1}, {2, 8}
+```
+
+Vous devriez obtenir les routes suivantes :
+
+![test routes](assets/routes.gif)
+
+[Archive contenant les étapes](assets/test_routes.tar.gz)
 
 ### Algorithme  élaboré
 
@@ -265,11 +289,55 @@ puis gauche.
     <br/>
 </center>
 
+Ce plateau peut être créé avec le code suivant :
+
+```cpp
+  Plateau p ;
+  p.ajouter({0,0}, {9,9}) ;
+
+
+  p.amenager({3,2}, Amenagement::ARBRE, 0) ;
+  p.amenager({3,6}, Amenagement::ARBRE, 0) ;
+  p.amenager({3,7}, Amenagement::ARBRE, 0) ;
+  p.amenager({4,1}, Amenagement::ARBRE, 0) ;
+  p.amenager({5,3}, Amenagement::ARBRE, 0) ;
+  p.amenager({5,5}, Amenagement::ARBRE, 0) ;
+  p.amenager({6,5}, Amenagement::ARBRE, 0) ;
+  p.amenager({8,6}, Amenagement::ARBRE, 0) ;
+  p.amenager({9,5}, Amenagement::ARBRE, 0) ;
+  p.amenager({9,6}, Amenagement::ARBRE, 0) ;
+
+  p.amenager({2,8}, Amenagement::PRODUCTEUR_AVOCAT, 0) ;
+  p.amenager({8,9}, Amenagement::PRODUCTEUR_BROCOLI, 0) ;
+  p.amenager({4,2}, Amenagement::PRODUCTEUR_CAROTTE, 0) ;
+  p.amenager({2,2}, Amenagement::PRODUCTEUR_DATTE, 0) ;
+  p.amenager({9,4}, Amenagement::PRODUCTEUR_ECHALOTE, 0) ;
+
+  p.amenager({2,1}, Amenagement::BOUTIQUE_CAROTTE, 2) ;
+  p.amenager({2,4}, Amenagement::BOUTIQUE_CAROTTE, 4) ;
+  p.amenager({2,5}, Amenagement::BOUTIQUE_BROCOLI, 0) ;
+  p.amenager({2,7}, Amenagement::BOUTIQUE_CAROTTE, 1) ;
+
+  p.amenager({3,4}, Amenagement::BOUTIQUE_ECHALOTE, 3) ;
+  p.amenager({3,5}, Amenagement::BOUTIQUE_ECHALOTE, 4) ;
+  p.amenager({3,8}, Amenagement::BOUTIQUE_AVOCAT, 1) ;
+
+  p.amenager({4,3}, Amenagement::BOUTIQUE_DATTE, 1) ;
+
+  p.amenager({5,1}, Amenagement::BOUTIQUE_BROCOLI, 3) ;
+
+  p.amenager({8,2}, Amenagement::BOUTIQUE_CAROTTE, 0) ;
+  p.amenager({8,8}, Amenagement::BOUTIQUE_DATTE, 0) ;
+
+  p.amenager({9,2}, Amenagement::BOUTIQUE_AVOCAT, 4) ;
+  p.amenager({9,9}, Amenagement::BOUTIQUE_DATTE, 2) ;
+```
+
 Muni de toutes ces données, une route apparaît sur la case $u$ si :
 
 1. elle est la seule pouvant accéder à une case aménagée ;
 1. elle n'est pas la case de départ et elle est à l'origine d'un arc $u → v$ utilisé 
-  tel que $R(v) ≤ P(u)$ ;
+  tel que $R(v) ≥ P(u)$ ;
 1. elle est la case de départ et elle est à l'origine de plusieurs arcs utilisés.
 
 Notez que le premier de ces trois critère nécessite de compter pour chaque case
