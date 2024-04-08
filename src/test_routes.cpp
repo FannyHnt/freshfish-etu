@@ -7,6 +7,8 @@
 
 void plateau2(){
 
+  std::cout << std::endl << "============================= PLATEAU 2 ==============================" << std::endl; 
+
   Plateau p ;
   p.ajouter({0,0}, {9,9}) ;
 
@@ -47,7 +49,6 @@ void plateau2(){
   p.amenager({9,2}, Amenagement::BOUTIQUE_AVOCAT, 4) ;
   p.amenager({9,9}, Amenagement::BOUTIQUE_DATTE, 2) ;
   
-      std::cout << "============================================" << std::endl;
       std::cout << p << std::endl;
 }
 
@@ -89,6 +90,8 @@ int main() {
         {7, 7}, {9, 1}, {2, 8}
     };
 
+    std::cout << "============================= PLATEAU 1 ==============================" << std::endl; 
+
     for(const auto& pos : positions){
       p.reserver(pos,0);
       p.amenager(pos,Amenagement::ARBRE,0);
@@ -98,10 +101,10 @@ int main() {
       p.dessiner(ss.str()) ;
       ++i ;
 #endif
-    }
-  
       std::cout << "============================================" << std::endl;
       std::cout << p << std::endl;
+    }
+ 
 
   plateau2();
 

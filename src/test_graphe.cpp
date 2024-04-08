@@ -41,18 +41,26 @@ int main() {
   if(p.tuiles.find(voisine({1,1},0)) == p.tuiles.end()){
     std::cout << "pas endore amménagé" << std::endl;
   } else {
-    std::cout << p.tuiles.find(voisine({1,1},0))->first << std::endl;
-    std::cout << nom_amenagement(p.tuiles.find(voisine({1,1},0))->second.amenagement) << std::endl;
-    std::cout << p.tuiles.find(voisine({1,1},0))->second.joueur << std::endl;
+    std::cout << "la voisine de haut de {1,1}, attendu : {0,1}" << std::endl ;
+    std::cout << p.tuiles.find(voisine({1,1},0))->first << std::endl << std::endl;
+    std::cout << "la voisine de droite de {1,1}, attendu : {1,2}" << std::endl ;
+    std::cout << p.tuiles.find(voisine({1,1},1))->first << std::endl << std::endl;
+    std::cout << "la voisine du bas de {1,1}, attendu : {2,1}" << std::endl ;
+    std::cout << p.tuiles.find(voisine({1,1},2))->first << std::endl << std::endl;
+    std::cout << "la voisine de gauche de {1,1}, attendu : {1,0}" << std::endl ;
+    std::cout << p.tuiles.find(voisine({1,1},3))->first << std::endl << std::endl;
+    std::cout << "l'amménagement à la case {0,1}, attendu : VIDE" << std::endl ;
+    std::cout << nom_amenagement(p.tuiles.find(voisine({1,1},0))->second.amenagement) << std::endl <<std::endl;
+    std::cout << "la valeur de joueur pour la tuile à la case {0,1}, attendu : -1" << std::endl ;
+    std::cout << p.tuiles.find(voisine({1,1},0))->second.joueur << std::endl << std::endl;
   }
 
-/*
-  std::cout<<accessible({1,1},0,p)<<std::endl;
-  std::cout<<accessible({2,1},0,p)<<std::endl;
-*/
-
-  std::cout<<arc_existe({1,1},0,p.tuiles)<<std::endl;
-  std::cout<<arc_existe({2,1},0,p.tuiles)<<std::endl;
+  std::cout << "Un arc existe-t-il entre {1,1} et sa voisine du haut {0,1} ?" << std::endl ; 
+  std::cout << "{1,1} est aménagé donc attendu : 0 (false)" << std::endl ;
+  std::cout << arc_existe({1,1},0,p.tuiles) << std::endl << std::endl;
+  std::cout << "Un arc existe-t-il entre {2,1} et son voisin du haut {1,1} ?" << std::endl ;
+  std::cout << "{2,1} n'est pas aménagé donc attendu : 1 (true)" << std::endl ;
+  std::cout << arc_existe({2,1},0,p.tuiles) << std::endl << std::endl;
 
   //dessin du plateau dans une image
   //il est également possible d'écrire un fichier png

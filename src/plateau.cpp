@@ -333,7 +333,7 @@ void placer_routes(Plateau  & p ){
 
 // Pour vérifier les valeurs des remontées et des profondeurs:
 
-  /*
+  /* 
     // Afficher le contenu du tableau profondeur
     std::cout << "profondeur" << std::endl;
     afficherTableau(profondeur);
@@ -346,6 +346,7 @@ void placer_routes(Plateau  & p ){
     std::cout << std::endl;
     std::cout << std::endl;
   */
+  
 }
 
 void Plateau::ajouter(const Position& pos) {
